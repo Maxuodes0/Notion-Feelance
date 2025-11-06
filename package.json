@@ -1,0 +1,14 @@
+{
+  "name": "notion-freelance-tools",
+  "version": "1.0.0",
+  "description": "Automation scripts for Notion freelance DB",
+  "main": "send-freelance-status-emails.js",
+  "scripts": {
+    "send-status-emails": "node send-freelance-status-emails.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.0",
+    "nodemailer": "^6.9.0",
+    "dotenv": "^16.4.0"
+  }
+}
