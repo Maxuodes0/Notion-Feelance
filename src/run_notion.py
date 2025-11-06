@@ -1,7 +1,6 @@
 import os
 from notion_client import Client
 
-
 def main():
     notion_token = os.getenv("NOTION_TOKEN")
     database_id = os.getenv("NOTION_DB_ID")
@@ -15,27 +14,42 @@ def main():
     print(f"⏳ Querying Notion database: {database_id} ...")
     response = notion.databases.query(database_id=database_id, page_size=100)
     results = response.get("results", [])
-    print(f"✅ Found {len(results)} items in the database.")
+    print(f"✅ Found {len(results)} items in the database.\n")
 
-    # نمر على كل الصفوف ونحدث حالة الطلب
+    updated_count = 0
+
     for idx, page in enumerate(results, start=1):
         page_id = page.get("id")
-        print(f"🔄 Updating page {idx} ({page_id}) -> حالة الطلب = قيد الانتظار")
+        props = page.get("properties", {})
+        current_status = None
 
-        try:
-            notion.pages.update(
-                page_id=page_id,
-                properties={
-                    "حالة الطلب": {
-                        "status": {"name": "قيد الانتظار"}
+        # نحاول نقرأ قيمة حقل "حالة الطلب"
+        if "حالة الطلب" in props:
+            status_prop = props["حالة الطلب"]
+            if status_prop.get("select"):
+                current_status = status_prop["select"].get("name")
+
+        print(f"[{idx}] Page ID: {page_id}")
+        print(f"   الحالة الحالية: {current_status}")
+
+        # إذا الحالة فاضية نحدّثها إلى "قيد الانتظار"
+        if not current_status:
+            print("   ➡️ Updating to 'قيد الانتظار' ...")
+            try:
+                notion.pages.update(
+                    page_id=page_id,
+                    properties={
+                        "حالة الطلب": {"select": {"name": "قيد الانتظار"}}
                     }
-                }
-            )
-            print("✅ Updated successfully.")
-        except Exception as e:
-            print(f"⚠️ Failed to update page {idx}: {e}")
+                )
+                updated_count += 1
+                print("   ✅ Updated successfully.\n")
+            except Exception as e:
+                print(f"   ⚠️ Failed to update: {e}\n")
+        else:
+            print("   ⏭️ Skipped (already has a value)\n")
 
-    print("\n🏁 Done. All pages updated to حالة الطلب = قيد الانتظار.")
+    print(f"🏁 Done. Updated {updated_count} pages to 'قيد الانتظار'.")
 
 
 if __name__ == "__main__":
