@@ -19,13 +19,13 @@ jobs:
         python-version: '3.9'
     
     - name: Install dependencies
-      run: pip install notion-client
+      run: pip install notion-client==2.0.11
     
     - name: Run script
       env:
         NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
         NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
-      run: python run_notion.py
+      run: python src/run_notion.py
     
     - name: Commit results
       run: |
