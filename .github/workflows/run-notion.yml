@@ -33,7 +33,7 @@ jobs:
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
         run: |
           echo "🚀 Running Notion Python script..."
-          python run_notion.py   # انتبه: بدون src/
+          python src/run_notion.py    
 
   send-emails:
     needs: update-status        # يشغّل هذه الجوب بعد الأولى
