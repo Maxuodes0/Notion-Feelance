@@ -2,9 +2,9 @@
   "name": "notion-freelance-tools",
   "version": "1.0.0",
   "description": "Automation scripts for Notion freelance DB",
-  "main": "send-freelance-status-emails.js",
+  "main": "src/send-freelance-status-emails.js",
   "scripts": {
-    "send-status-emails": "node send-freelance-status-emails.js"
+    "send-status-emails": "node src/send-freelance-status-emails.js"
   },
   "dependencies": {
     "@notionhq/client": "^2.2.0",
