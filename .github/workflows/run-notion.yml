@@ -61,4 +61,4 @@ jobs:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
         run: |
           echo "📨 Running email sender..."
-          npm src/run send-status-emails
+          npm run send-status-emails
