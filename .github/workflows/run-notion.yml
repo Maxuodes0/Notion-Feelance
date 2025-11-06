@@ -3,9 +3,9 @@ name: Freelance Requests Flow
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}   # يسمح بتشغيل يدوي من GitHub Actions
+  workflow_dispatch: {}   # تشغيل يدوي من GitHub Actions
   schedule:
-    # مثال: تشغيل يومي الساعة 8 صباحاً بتوقيت الرياض (5 UTC)
+    # مثال: كل يوم الساعة 8 صباحاً بتوقيت الرياض (5 UTC)
     - cron: "0 5 * * *"
 
 jobs:
@@ -27,16 +27,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Notion script (update statuses)
+      - name: Run Notion Python script (update statuses)
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
         run: |
           echo "🚀 Running Notion Python script..."
-          python src/run_notion.py
+          python run_notion.py   # انتبه: بدون src/
 
   send-emails:
-    needs: update-status        # يخليها تشتغل بعد الجوب الأولى
+    needs: update-status        # يشغّل هذه الجوب بعد الأولى
     runs-on: ubuntu-latest
 
     steps:
