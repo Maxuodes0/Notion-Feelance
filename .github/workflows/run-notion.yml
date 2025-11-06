@@ -1,12 +1,15 @@
-name: Run Notion Script
+name: Freelance Requests Flow
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}  # يسمح بتشغيل يدوي من GitHub Actions
+  workflow_dispatch: {}   # يسمح بتشغيل يدوي من GitHub Actions
+  schedule:
+    # مثال: تشغيل يومي الساعة 8 صباحاً بتوقيت الرياض (5 UTC)
+    - cron: "0 5 * * *"
 
 jobs:
-  run:
+  update-status:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,16 +21,44 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           echo "📦 Installing Python packages..."
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Notion script
+      - name: Run Notion script (update statuses)
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
         run: |
-          echo "🚀 Running Notion script..."
+          echo "🚀 Running Notion Python script..."
           python src/run_notion.py
+
+  send-emails:
+    needs: update-status        # يخليها تشتغل بعد الجوب الأولى
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Node dependencies
+        run: |
+          npm install
+
+      - name: Run email sender
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+          MAIL_USER: ${{ secrets.MAIL_USER }}
+          MAIL_PASS: ${{ secrets.MAIL_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+        run: |
+          echo "📨 Running email sender..."
+          npm run send-status-emails
