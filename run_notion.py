@@ -70,4 +70,3 @@ def extract_property_text(prop):
 
 if __name__ == "__main__":
     main()
-
